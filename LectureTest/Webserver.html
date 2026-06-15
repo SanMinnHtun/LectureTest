@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Figure 28.24 - Using a Web Server</title>
+    <meta
+      name="description"
+      content="Animated diagram showing browser GET request, web server response, and media player playback."
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background-color: #111215;
+        color: #ffffff;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .ws-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .ws-container {
+        position: relative;
+        width: min(760px, 100%);
+        height: 520px;
+        background-color: #1c1d22;
+        border: 2px solid #2d2f36;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      }
+
+      .ws-title {
+        margin: 0 0 8px;
+        color: #00a8ff;
+        font-size: 18px;
+        letter-spacing: 1px;
+      }
+
+      .ws-subtitle {
+        margin: 0 0 24px;
+        color: #a0a5b5;
+        font-size: 13px;
+        font-style: italic;
+      }
+
+      .machine-label {
+        position: absolute;
+        font-size: 12px;
+        color: #a0a5b5;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      .label-client {
+        left: 110px;
+        top: 80px;
+      }
+
+      .label-server {
+        right: 110px;
+        top: 80px;
+      }
+
+      .machine {
+        position: absolute;
+        border: 2px dashed #3a3d47;
+        border-radius: 12px;
+        background-color: rgba(255, 255, 255, 0.02);
+      }
+
+      .machine-client {
+        left: 40px;
+        top: 100px;
+        width: 260px;
+        height: 360px;
+      }
+
+      .machine-server {
+        right: 40px;
+        top: 100px;
+        width: 220px;
+        height: 160px;
+      }
+
+      .node {
+        position: absolute;
+        width: 140px;
+        height: 80px;
+        background-color: #252830;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      }
+
+      .browser-node {
+        left: 100px;
+        top: 160px;
+        border: 2px solid #00a8ff;
+      }
+
+      .server-node {
+        right: 80px;
+        top: 160px;
+        border: 2px solid #4cd137;
+      }
+
+      .player-node {
+        left: 100px;
+        top: 380px;
+        border: 2px solid #e1b12c;
+        flex-direction: column;
+      }
+
+      .player-node span {
+        font-size: 11px;
+        color: #a0a5b5;
+        font-weight: 400;
+        margin-top: 4px;
+      }
+
+      .h-channel {
+        position: absolute;
+        left: 244px;
+        width: 292px;
+        height: 3px;
+        background-color: #2d2f36;
+        border-radius: 2px;
+      }
+
+      .ch-get {
+        top: 188px;
+      }
+
+      .ch-resp {
+        top: 218px;
+      }
+
+      .h-label {
+        position: absolute;
+        left: 244px;
+        width: 292px;
+        text-align: center;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .label-get {
+        top: 168px;
+        color: #00a8ff;
+      }
+
+      .label-resp {
+        top: 226px;
+        color: #4cd137;
+      }
+
+      .v-channel {
+        position: absolute;
+        left: 168px;
+        top: 244px;
+        width: 3px;
+        height: 134px;
+        background-color: #2d2f36;
+        border-radius: 2px;
+      }
+
+      .v-label {
+        position: absolute;
+        left: 180px;
+        top: 290px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #e1b12c;
+        width: 110px;
+      }
+
+      .arrow-right {
+        position: absolute;
+        right: -2px;
+        top: -5px;
+        width: 0;
+        height: 0;
+        border-top: 7px solid transparent;
+        border-bottom: 7px solid transparent;
+        border-left: 10px solid #00a8ff;
+      }
+
+      .arrow-left {
+        position: absolute;
+        left: -2px;
+        top: -5px;
+        width: 0;
+        height: 0;
+        border-top: 7px solid transparent;
+        border-bottom: 7px solid transparent;
+        border-right: 10px solid #4cd137;
+      }
+
+      .arrow-down {
+        position: absolute;
+        left: -5px;
+        bottom: -2px;
+        width: 0;
+        height: 0;
+        border-left: 7px solid transparent;
+        border-right: 7px solid transparent;
+        border-top: 10px solid #e1b12c;
+      }
+
+      .packet {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+
+      .pkt-get {
+        top: -4px;
+        background-color: #00a8ff;
+        box-shadow: 0 0 12px #00a8ff;
+        animation: flowGet 4s infinite linear;
+      }
+
+      .pkt-resp {
+        top: -4px;
+        background-color: #4cd137;
+        box-shadow: 0 0 12px #4cd137;
+        animation: flowResp 4s infinite linear;
+      }
+
+      .pkt-media {
+        left: -4px;
+        background-color: #e1b12c;
+        box-shadow: 0 0 12px #e1b12c;
+        animation: flowMedia 4s infinite linear;
+      }
+
+      @keyframes flowGet {
+        0% {
+          left: 0%;
+          opacity: 1;
+        }
+        25% {
+          left: 100%;
+          opacity: 1;
+        }
+        26% {
+          opacity: 0;
+        }
+        100% {
+          left: 100%;
+          opacity: 0;
+        }
+      }
+
+      @keyframes flowResp {
+        0%,
+        25% {
+          left: 100%;
+          opacity: 0;
+        }
+        26% {
+          left: 100%;
+          opacity: 1;
+        }
+        50% {
+          left: 0%;
+          opacity: 1;
+        }
+        51%,
+        100% {
+          left: 0%;
+          opacity: 0;
+        }
+      }
+
+      @keyframes flowMedia {
+        0%,
+        50% {
+          top: 0%;
+          opacity: 0;
+        }
+        51% {
+          top: 0%;
+          opacity: 1;
+        }
+        95% {
+          top: 100%;
+          opacity: 1;
+        }
+        96%,
+        100% {
+          top: 100%;
+          opacity: 0;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .ws-page {
+          align-items: flex-start;
+          overflow-x: auto;
+        }
+
+        .ws-container {
+          flex: 0 0 760px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="ws-page">
+      <section class="ws-container" aria-label="Using a web server animated diagram">
+        <h1 class="ws-title">Figure 28.24 - Using a Web Server</h1>
+        <p class="ws-subtitle">
+          Browser requests an audio/video file, server responds, media player plays it.
+        </p>
+
+        <div class="machine machine-client"></div>
+        <div class="machine machine-server"></div>
+        <div class="machine-label label-client">Client machine</div>
+        <div class="machine-label label-server">Server machine</div>
+
+        <div class="node browser-node">Browser</div>
+        <div class="node server-node">Web server</div>
+        <div class="node player-node">
+          Media player
+          <span>(Audio/video file)</span>
+        </div>
+
+        <div class="h-label label-get">GET: audio/video file</div>
+        <div class="h-channel ch-get">
+          <div class="packet pkt-get"></div>
+          <div class="arrow-right"></div>
+        </div>
+
+        <div class="h-channel ch-resp">
+          <div class="packet pkt-resp"></div>
+          <div class="arrow-left"></div>
+        </div>
+        <div class="h-label label-resp">RESPONSE</div>
+
+        <div class="v-channel">
+          <div class="packet pkt-media"></div>
+          <div class="arrow-down"></div>
+        </div>
+        <div class="v-label">Audio/video file</div>
+      </section>
+    </main>
+  </body>
+</html>
